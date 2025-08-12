@@ -187,3 +187,6 @@ sc delete ROOTKIT
 del C:\Windows\System32\Drivers\RTCore64.sys
 del C:\Windows\System32\Drivers\FirstDriver.sys
 ```
+
+## Credits
+I got inspired to expand upon the tools provided in the Evasion Lab (CETP from [Altered Security](https://www.alteredsecurity.com/evasionlab)).
