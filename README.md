@@ -25,7 +25,7 @@ This `C` project includes multiple proof-of-concept (POC) code examples that per
 - Change process token
 	- Privilege escalation to system
 	- Downgrade EDR's token
-- Disable DSE in case VBS is disabled
+- Disable DSE in case VBS is disabled and load unsigned driver
 
 Requirements:
 - All  these attacks require local administrative privileges to load the vulnerable driver.
