@@ -189,4 +189,4 @@ del C:\Windows\System32\Drivers\FirstDriver.sys
 ```
 
 ## Credits
-I got inspired to expand upon the tools provided in the Evasion Lab (CETP from [Altered Security](https://www.alteredsecurity.com/evasionlab)).
+I got inspired to expand upon the tools provided in the Evasion Lab (CETP from [Altered Security](https://www.alteredsecurity.com/evasionlab)), taught by [Saad Ahla](https://www.linkedin.com/in/saad-ahla/).
