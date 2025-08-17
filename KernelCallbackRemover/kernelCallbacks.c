@@ -1,7 +1,7 @@
 #include "common.h"
 
 const char* driverNames[] = {
-	"WdFilter.sys", "MsSecFlt.sys", "elastic - endpoint - driver.sys", "SysmonDrv.sys"
+	"WdFilter.sys", "MsSecFlt.sys", "elastic-endpoint-driver.sys", "SysmonDrv.sys"
 };
 
 const int numDrivers = sizeof(driverNames) / sizeof(driverNames[0]);
